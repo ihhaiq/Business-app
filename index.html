@@ -3,89 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Bot Panel</title>
+    <title>إعدادات البوت</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg: var(--tg-theme-bg-color, #ffffff);
-            --sec-bg: var(--tg-theme-secondary-bg-color, #f4f4f4);
-            --txt: var(--tg-theme-text-color, #000000);
-            --btn: var(--tg-theme-button-color, #2481cc);
-            --btn-txt: var(--tg-theme-button-text-color, #ffffff);
-            --hint: var(--tg-theme-hint-color, #999999);
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 15px; }
-        .card { background: var(--sec-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05); }
-        .section-title { font-weight: bold; font-size: 1.1em; color: var(--btn); margin-bottom: 10px; display: flex; align-items: center; }
-        .preview { font-size: 0.85em; color: var(--hint); background: rgba(0,0,0,0.03); padding: 8px; border-radius: 8px; margin-bottom: 10px; border-right: 3px solid var(--btn); }
-        label { font-size: 0.9em; margin-bottom: 5px; display: block; opacity: 0.8; }
-        input, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--txt); box-sizing: border-box; font-size: 1em; }
-        button { width: 100%; padding: 15px; background: var(--btn); color: var(--btn-txt); border: none; border-radius: 12px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .hint-text { font-size: 0.75em; color: var(--hint); margin-top: 5px; }
+        :root { --bg: var(--tg-theme-bg-color); --txt: var(--tg-theme-text-color); }
+        body { font-family: sans-serif; background: var(--bg); color: var(--txt); padding: 15px; }
+        .card { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.1); }
+        .label { font-weight: bold; color: var(--tg-theme-button-color); display: block; margin-bottom: 5px; }
+        textarea, input { width: 100%; border-radius: 10px; padding: 10px; border: 1px solid #ccc; background: var(--bg); color: var(--txt); box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--tg-theme-button-color); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
+    <h3>⚙️ الإعدادات المتطورة</h3>
 
     <div class="card">
-        <div class="section-title">👤 إعدادات الهوية</div>
-        <label>اسمي في البوت:</label>
-        <input type="text" id="your_name" placeholder="مثال: حسين">
+        <label class="label">👤 اسمك الجديد:</label>
+        <input type="text" id="your_name" placeholder="أدخل اسمك هنا">
     </div>
 
     <div class="card">
-        <div class="section-title">👋 الترحيب ونظام الوصول</div>
-        <div class="preview" id="p_welcome">سيظهر هنا النص الحالي عند الفتح...</div>
-        <textarea id="welcome" rows="2" placeholder="أدخل نص الترحيب الجديد"></textarea>
-        <div class="hint-text">المتغيرات: {mention}, {your_name}, {time}</div>
+        <label class="label">👋 رسالة الترحيب:</label>
+        <textarea id="welcome_txt" rows="3" placeholder="أدخل نص الترحيب"></textarea>
     </div>
 
     <div class="card">
-        <div class="section-title">📝 نظام رصد التعديل</div>
-        <div class="preview" id="p_edit">النص الأصلي لتنبيه التعديل...</div>
-        <textarea id="edit_alert" rows="2" placeholder="نص تنبيه التعديل"></textarea>
-        <div class="hint-text">المتغيرات: {old_text}, {new_text}, {user_name}</div>
+        <label class="label">📝 تنبيه التعديل:</label>
+        <textarea id="edit_txt" rows="3" placeholder="أدخل نص تنبيه التعديل"></textarea>
     </div>
 
-    <div class="card">
-        <div class="section-title">🗑 نظام رصد الحذف</div>
-        <div class="preview" id="p_del">النص الأصلي لتنبيه الحذف...</div>
-        <textarea id="del_alert" rows="2" placeholder="نص تنبيه الحذف"></textarea>
-    </div>
-
-    <div class="card">
-        <div class="section-title">📸 صيد الوسائط</div>
-        <div class="preview" id="p_media">نص تنبيه صيد الصور/الفيديو...</div>
-        <textarea id="media_alert" rows="2" placeholder="نص تنبيه الوسائط"></textarea>
-    </div>
-
-    <button onclick="sendData()">حفظ التغييرات ✅</button>
+    <button id="saveBtn">حفظ التغييرات وإرسال ✅</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ملاحظة: لجلب "النص الحالي" فعلياً، يفضل إرساله عبر رابط الـ URL
-        // ولكن للتبسيط سنقوم ببرمجة زر الحفظ ليرسل ما تم كتابته فقط
-        
-        function sendData() {
+        document.getElementById('saveBtn').addEventListener('click', () => {
             const data = {
                 your_name: document.getElementById('your_name').value,
                 texts: {
-                    welcome: document.getElementById('welcome').value,
-                    edit_alert: document.getElementById('edit_alert').value,
-                    del_alert: document.getElementById('del_alert').value,
-                    media_alert: document.getElementById('media_alert').value
+                    welcome: document.getElementById('welcome_txt').value,
+                    edit_alert: document.getElementById('edit_txt').value
                 }
             };
             
-            // فلترة الحقول الفارغة لكي لا يحذف البوت النصوص القديمة
+            // حذف الحقول الفارغة لكي لا تتغير في السيرفر
             if(!data.your_name) delete data.your_name;
-            for (let key in data.texts) {
-                if (!data.texts[key]) delete data.texts[key];
-            }
+            if(!data.texts.welcome) delete data.texts.welcome;
+            if(!data.texts.edit_alert) delete data.texts.edit_alert;
 
             tg.sendData(JSON.stringify(data));
-        }
+        });
     </script>
 </body>
 </html>
