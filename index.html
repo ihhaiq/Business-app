@@ -3,57 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إعدادات البوت</title>
+    <title>إعدادات البوت المتطورة</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: var(--tg-theme-bg-color); --txt: var(--tg-theme-text-color); }
-        body { font-family: sans-serif; background: var(--bg); color: var(--txt); padding: 15px; }
-        .card { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.1); }
-        .label { font-weight: bold; color: var(--tg-theme-button-color); display: block; margin-bottom: 5px; }
-        textarea, input { width: 100%; border-radius: 10px; padding: 10px; border: 1px solid #ccc; background: var(--bg); color: var(--txt); box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--tg-theme-button-color); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        :root {
+            --primary: #2196f3;
+            --primary-dark: #1976d2;
+            --primary-light: rgba(33, 150, 243, 0.12);
+            --success: #22c55e;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.07);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+            --font: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f1117;
+                --card-bg: #1a1d27;
+                --text: #e8eaf0;
+                --text-muted: #7a849a;
+                --border: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            direction: rtl;
+            margin: 0;
+            padding: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .header-title { font-weight: 700; font-size: 1.1rem; }
+        .header-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .field-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: var(--bg);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            font-family: inherit;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        .badges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .badge-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            direction: ltr;
+        }
+
+        .preview-bubble-wrap {
+            margin-top: 12px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .preview-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
+
+        .preview-bubble {
+            background: var(--bg);
+            border: 1.5px solid rgba(33, 150, 243, 0.1);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .var-highlight {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .save-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
-    <h3>⚙️ الإعدادات المتطورة</h3>
 
+    <div class="header">
+        <div class="header-icon">⚙️</div>
+        <div>
+            <div class="header-title">الإعدادات المتطورة</div>
+            <div class="header-subtitle">خصّص رسائل البوت بمتغيرات ديناميكية</div>
+        </div>
+    </div>
+
+    <!-- اسم المستخدم -->
     <div class="card">
-        <label class="label">👤 اسمك الجديد:</label>
+        <label class="field-label"><span>👤</span> اسمك الجديد</label>
         <input type="text" id="your_name" placeholder="أدخل اسمك هنا">
     </div>
 
-    <div class="card">
-        <label class="label">👋 رسالة الترحيب:</label>
-        <textarea id="welcome_txt" rows="3" placeholder="أدخل نص الترحيب"></textarea>
-    </div>
+    <!-- الحقول الديناميكية -->
+    <div id="fields-container"></div>
 
-    <div class="card">
-        <label class="label">📝 تنبيه التعديل:</label>
-        <textarea id="edit_txt" rows="3" placeholder="أدخل نص تنبيه التعديل"></textarea>
-    </div>
-
-    <button id="saveBtn">حفظ التغييرات وإرسال ✅</button>
+    <button class="save-btn" id="save-btn">💾 حفظ التغييرات وإغلاق</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        document.getElementById('saveBtn').addEventListener('click', () => {
+        const VARIABLES = [
+            { key: "user_name", label: "الاسم", sample: "محمد أحمد" },
+            { key: "mention", label: "منشن", sample: "@mohammed" },
+            { key: "time", label: "الوقت", sample: "14:30" },
+            { key: "your_name", label: "اسمك", sample: "حسين" }
+        ];
+
+        const FIELDS = [
+            { key: "welcome", label: "رسالة الترحيب", icon: "👋" },
+            { key: "edit_alert", label: "التقاط التعديل", icon: "✏️" },
+            { key: "delete_alert", label: "التقاط الحذف", icon: "🗑️" },
+            { key: "media_alert", label: "التقاط الوسائط", icon: "📎" }
+        ];
+
+        const container = document.getElementById('fields-container');
+
+        // بناء الحقول
+        FIELDS.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <label class="field-label"><span>${f.icon}</span> ${f.label}</label>
+                <textarea id="${f.key}" rows="3" placeholder="اكتب النص هنا..."></textarea>
+                <div class="badges-list" id="badges-${f.key}"></div>
+                <div class="preview-bubble-wrap">
+                    <div class="preview-label">معاينة:</div>
+                    <div class="preview-bubble" id="preview-${f.key}">---</div>
+                </div>
+            `;
+            container.appendChild(card);
+
+            const area = card.querySelector('textarea');
+            const preview = card.querySelector('.preview-bubble');
+
+            // إضافة أزرار المتغيرات
+            const badgesBox = card.querySelector('.badges-list');
+            VARIABLES.forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'badge-btn';
+                btn.innerText = `{${v.key}}`;
+                btn.onclick = () => {
+                    area.setRangeText(`{${v.key}}`, area.selectionStart, area.selectionEnd, 'end');
+                    area.dispatchEvent(new Event('input'));
+                    area.focus();
+                };
+                badgesBox.appendChild(btn);
+            });
+
+            // تحديث المعاينة الحية
+            area.oninput = () => {
+                let val = area.value;
+                VARIABLES.forEach(v => {
+                    val = val.replace(new RegExp(`\\{${v.key}\\}`, 'g'), `<span class="var-highlight">${v.sample}</span>`);
+                });
+                preview.innerHTML = val.replace(/\n/g, '<br>') || '---';
+            };
+        });
+
+        // زر الحفظ
+        document.getElementById('save-btn').onclick = () => {
             const data = {
                 your_name: document.getElementById('your_name').value,
-                texts: {
-                    welcome: document.getElementById('welcome_txt').value,
-                    edit_alert: document.getElementById('edit_txt').value
-                }
+                texts: {}
             };
-            
-            // حذف الحقول الفارغة لكي لا تتغير في السيرفر
-            if(!data.your_name) delete data.your_name;
-            if(!data.texts.welcome) delete data.texts.welcome;
-            if(!data.texts.edit_alert) delete data.texts.edit_alert;
+            FIELDS.forEach(f => {
+                const val = document.getElementById(f.key).value;
+                if(val) data.texts[f.key] = val;
+            });
 
             tg.sendData(JSON.stringify(data));
-        });
+        };
     </script>
 </body>
 </html>
