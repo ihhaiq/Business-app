@@ -3,41 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel</title>
+    <title>Advanced Panel</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); padding: 15px; }
-        .card { background: var(--tg-theme-secondary-bg-color, #f0f0f0); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        input { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin-top: 5px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); font-weight: bold; cursor: pointer; }
+        :root { --bg: var(--tg-theme-bg-color); --txt: var(--tg-theme-text-color); --hint: var(--tg-theme-hint-color); }
+        body { font-family: sans-serif; background: var(--bg); color: var(--txt); padding: 15px; }
+        .section { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h3 { margin-top: 0; color: var(--tg-theme-button-color); border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .preview { font-size: 0.8em; color: var(--hint); margin-bottom: 10px; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 8px; }
+        input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; background: var(--bg); color: var(--txt); }
+        button { width: 100%; padding: 15px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 10px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h3>👤 الإعدادات الشخصية</h3>
-        <label>اسمي في البوت:</label><br>
-        <input type="text" id="your_name" placeholder="مثال: حسين">
+    <h2>⚙️ الإعدادات المتطورة</h2>
+
+    <div class="section">
+        <h3>👤 الاسم الشخصي</h3>
+        <div class="preview">الحالي: يتم تحديثه عند الحفظ</div>
+        <input type="text" id="your_name" placeholder="أدخل اسمك الذي يظهر في الردود">
     </div>
 
-    <div class="card">
-        <h3>✉️ نصوص الرد</h3>
-        <label>رسالة الترحيب:</label><br>
-        <input type="text" id="welcome_msg" placeholder="أدخل نص الترحيب هنا...">
+    <div class="section">
+        <h3>👋 رسالة الترحيب</h3>
+        <div class="preview">المتغيرات المتاحة: {mention}, {your_name}, {time}</div>
+        <textarea id="welcome" rows="2"></textarea>
     </div>
 
-    <button id="save_btn">حفظ الإعدادات ✅</button>
+    <div class="section">
+        <h3>📝 تنبيه التعديل</h3>
+        <div class="preview">المتغيرات: {user_name}, {old_text}, {new_text}</div>
+        <textarea id="edit_alert" rows="2"></textarea>
+    </div>
+
+    <div class="section">
+        <h3>🗑 تنبيه الحذف</h3>
+        <div class="preview">المتغيرات: {user_name}, {text}</div>
+        <textarea id="del_alert" rows="2"></textarea>
+    </div>
+
+    <div class="section">
+        <h3>📸 تنبيه صيد الوسائط</h3>
+        <textarea id="media_alert" rows="2"></textarea>
+    </div>
+
+    <button onclick="save()">حفظ كافة التعديلات ✅</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        document.getElementById('save_btn').addEventListener('click', () => {
+        function save() {
             const data = {
                 your_name: document.getElementById('your_name').value,
-                welcome: document.getElementById('welcome_msg').value
+                texts: {
+                    welcome: document.getElementById('welcome').value,
+                    edit_alert: document.getElementById('edit_alert').value,
+                    del_alert: document.getElementById('del_alert').value,
+                    media_alert: document.getElementById('media_alert').value
+                }
             };
-            tg.sendData(JSON.stringify(data)); // إرسال البيانات للبوت
-        });
+            // حذف الحقول الفارغة لكي لا تمسح النصوص القديمة
+            if(!data.your_name) delete data.your_name;
+            Object.keys(data.texts).forEach(key => {
+                if(!data.texts[key]) delete data.texts[key];
+            });
+
+            tg.sendData(JSON.stringify(data));
+        }
     </script>
 </body>
 </html>
