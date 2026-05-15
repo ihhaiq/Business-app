@@ -3,327 +3,644 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spy Bot Elite</title>
+    <title>Spy Detective - إعدادات متقدمة</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #ff0055;
-            --neon-blue: #00f2ff;
-            --neon-purple: #7000ff;
-            --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.08);
-            --text: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        [lang="en"] { direction: ltr; font-family: 'Outfit', sans-serif; }
-        [lang="ar"] { direction: rtl; font-family: 'Vazirmatn', sans-serif; }
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: rgba(124, 58, 237, 0.12);
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.1);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --card-bg: #ffffff;
+                --text: #0f172a;
+                --text-muted: #64748b;
+                --border: rgba(0, 0, 0, 0.08);
+                --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+                --shadow-md: 0 4px 12px rgba(124, 58, 237, 0.15);
+            }
+        }
 
         body {
+            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
             background: var(--bg);
-            background-image: linear-gradient(45deg, #050505 25%, #0a0a1a 100%);
             color: var(--text);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            direction: rtl;
+            padding: 16px;
+            -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        /* الشبح التفاعلي */
-        .ghost-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            perspective: 1000px;
+        body.ltr {
+            direction: ltr;
         }
 
-        #spy-ghost {
-            font-size: 80px;
-            cursor: pointer;
-            transition: transform 0.1s ease-out;
-            user-select: none;
-            display: inline-block;
-            filter: drop-shadow(0 0 20px var(--neon-blue));
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* زر اللغة */
-        .lang-switcher {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: var(--glass);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 8px 15px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes buttonPress {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+            }
+        }
+
+        /* ===== HEADER ===== */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding-bottom: 24px;
+            animation: fadeInDown 0.6s ease-out;
         }
 
-        .header h1 {
-            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.8rem;
-            margin: 10px 0;
+            box-shadow: var(--shadow-md);
+            animation: scaleIn 0.5s ease-out;
         }
 
+        .header-text h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .lang-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lang-toggle:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .lang-toggle:active {
+            animation: buttonPress 0.3s ease;
+        }
+
+        /* ===== CARDS ===== */
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.6s ease-out backwards;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            animation: slideInUp 0.5s ease-out;
+            transition: all 0.3s ease;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
         }
 
+        .card.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--card-bg), rgba(124, 58, 237, 0.05));
+        }
+
+        /* ===== FIELD LABEL ===== */
         .field-label {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--neon-blue);
-            margin-bottom: 15px;
-            font-weight: bold;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
+        .field-icon {
+            font-size: 1.3rem;
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        /* ===== INPUTS ===== */
         input, textarea {
             width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 12px;
-            color: white;
-            outline: none;
-            transition: 0.3s;
+            background: var(--bg);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            resize: none;
+            transition: all 0.3s ease;
         }
 
         input:focus, textarea:focus {
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 15px rgba(112, 0, 255, 0.3);
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            animation: glow 1.5s ease-in-out infinite;
+        }
+
+        textarea {
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        /* ===== BADGES (VARIABLE BUTTONS) ===== */
+        .badges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            animation: slideInUp 0.5s ease-out 0.1s both;
         }
 
         .badge-btn {
-            background: rgba(112, 0, 255, 0.15);
-            color: #d1b3ff;
-            border: 1px solid var(--neon-purple);
-            border-radius: 10px;
-            padding: 5px 10px;
-            margin: 4px;
+            background: linear-gradient(135deg, var(--primary-light), rgba(6, 182, 212, 0.1));
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            border-radius: 20px;
+            padding: 6px 12px;
             font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            direction: ltr;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
         }
 
         .badge-btn:hover {
-            background: var(--neon-purple);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
         }
 
-        /* زر الحفظ الدائري الممتع */
-        .save-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
+        .badge-btn:active {
+            animation: buttonPress 0.3s ease;
         }
 
-        .save-circular-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: var(--accent);
+        /* ===== PREVIEW SECTION ===== */
+        .preview-bubble-wrap {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            animation: slideInUp 0.5s ease-out 0.2s both;
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .preview-bubble {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(6, 182, 212, 0.05));
+            border: 1.5px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            position: relative;
+            min-height: 60px;
+            animation: scaleIn 0.4s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .preview-bubble.updating {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .var-highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-block;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        /* ===== SAVE BUTTON ===== */
+        .save-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
             border: none;
-            color: white;
-            font-size: 24px;
+            border-radius: var(--radius-lg);
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s infinite;
-            transition: 0.3s;
+            margin-top: 20px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: slideInUp 0.5s ease-out 0.3s both;
         }
 
-        .save-circular-btn:active { transform: scale(0.8); }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(255, 0, 85, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        .save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
         }
 
-        .preview-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-left: 3px solid var(--neon-blue);
-            border-radius: 5px;
-            font-size: 0.85rem;
+        .save-btn:active {
+            animation: buttonPress 0.3s ease;
         }
 
-        .var-tag { color: var(--neon-blue); font-weight: bold; }
+        .save-btn.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .save-btn.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== SCROLL ANIMATION ===== */
+        .scroll-indicator {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 20px;
+            animation: fadeInDown 0.8s ease-out 0.5s both;
+        }
+
+        .scroll-indicator::after {
+            content: '↓';
+            display: block;
+            font-size: 1.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .lang-toggle {
+                align-self: flex-end;
+            }
+
+            .card {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+
+            .badges-list {
+                gap: 6px;
+            }
+
+            .badge-btn {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
-<body lang="ar">
-
-    <button class="lang-switcher" onclick="toggleLang()">EN</button>
-
-    <div class="ghost-container">
-        <div id="spy-ghost">👻</div>
-    </div>
+<body>
 
     <div class="header">
-        <h1 id="t-title">Spy Detective</h1>
-        <p id="t-subtitle" style="color: var(--text-muted)">قائمة تعديل النصوص </p>
+        <div class="header-left">
+            <div class="header-icon">🕵️</div>
+            <div class="header-text">
+                <h1 id="title">Spy Detective</h1>
+                <p id="subtitle">إعدادات متقدمة للرسائل</p>
+            </div>
+        </div>
+        <button class="lang-toggle" id="lang-toggle">English</button>
     </div>
 
-    <div class="card" style="animation-delay: 0.1s">
-        <label class="field-label">👤 <span id="t-name-label">اسمك </span></label>
-        <input type="text" id="your_name" placeholder="...">
+    <!-- اسم المستخدم -->
+    <div class="card">
+        <label class="field-label">
+            <span class="field-icon">👤</span>
+            <span id="label-name">اسمك الجديد</span>
+        </label>
+        <input type="text" id="your_name" placeholder="أدخل اسمك هنا">
     </div>
 
+    <!-- الحقول الديناميكية -->
     <div id="fields-container"></div>
 
-    <div class="save-container">
-        <button class="save-circular-btn" id="save-btn" title="حفظ">💾</button>
-    </div>
+    <button class="save-btn" id="save-btn">
+        <span id="save-text">💾 حفظ التغييرات</span>
+    </button>
+
+    <div class="scroll-indicator" id="scroll-indicator"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         let currentLang = 'ar';
-        const content = {
+
+        const TRANSLATIONS = {
             ar: {
-                title: "Spy Bot Elite", subtitle: "إعدادات النصوص ",
-                nameLabel: "اسمك ", save: "💾",
+                title: 'Spy Detective',
+                subtitle: 'إعدادات متقدمة للرسائل',
+                labelName: 'اسمك الجديد',
+                placeholderName: 'أدخل اسمك هنا',
+                saveText: '💾 حفظ التغييرات',
+                preview: 'معاينة:',
+                langBtn: 'English',
                 fields: [
                     { key: "welcome", label: "رسالة الترحيب", icon: "👋" },
-                    { key: "edit_alert", label: "رصد التعديل", icon: "✏️" },
-                    { key: "del_alert", label: "رصد الحذف", icon: "🗑️" },
-                    { key: "media_alert", label: "رصد الوسائط ", icon: "📸" }
+                    { key: "edit_alert", label: "التقاط التعديل", icon: "✏️" },
+                    { key: "del_alert", label: "التقاط الحذف", icon: "🗑️" },
+                    { key: "media_alert", label: "التقاط الوسائط", icon: "📎" }
                 ],
-                preview: "المعاينة :", wait: "بانتظار البيانات..."
+                variables: [
+                    { key: "user_name", label: "الاسم الكامل", sample: "محمد أحمد" },
+                    { key: "name", label: "الاسم", sample: "محمد أحمد" },
+                    { key: "mention", label: "منشن", sample: "@mohammed" },
+                    { key: "time", label: "الوقت", sample: "14:30" },
+                    { key: "your_name", label: "اسمك", sample: "حسين" },
+                    { key: "user_id", label: "آيدي المستخدم", sample: "6377886202" },
+                    { key: "id", label: "الآيدي", sample: "6377886202" },
+                    { key: "text", label: "محتوى الرسالة", sample: "مرحباً بك" }
+                ]
             },
             en: {
-                title: "Spy Bot Elite", subtitle: "Advanced Stealth Settings",
-                nameLabel: "Personal Identifier", save: "💾",
+                title: 'Spy Detective',
+                subtitle: 'Advanced Message Settings',
+                labelName: 'Your New Name',
+                placeholderName: 'Enter your name here',
+                saveText: '💾 Save Changes',
+                preview: 'Preview:',
+                langBtn: 'العربية',
                 fields: [
                     { key: "welcome", label: "Welcome Message", icon: "👋" },
                     { key: "edit_alert", label: "Edit Detection", icon: "✏️" },
                     { key: "del_alert", label: "Delete Detection", icon: "🗑️" },
-                    { key: "media_alert", label: "Timed Media", icon: "📸" }
+                    { key: "media_alert", label: "Media Detection", icon: "📎" }
                 ],
-                preview: "System Preview:", wait: "Awaiting input..."
+                variables: [
+                    { key: "user_name", label: "Full Name", sample: "John Doe" },
+                    { key: "name", label: "Name", sample: "John Doe" },
+                    { key: "mention", label: "Mention", sample: "@john" },
+                    { key: "time", label: "Time", sample: "14:30" },
+                    { key: "your_name", label: "Your Name", sample: "Admin" },
+                    { key: "user_id", label: "User ID", sample: "6377886202" },
+                    { key: "id", label: "ID", sample: "6377886202" },
+                    { key: "text", label: "Message Content", sample: "Hello there" }
+                ]
             }
         };
 
-        const VARIABLES = [
-            { key: "user_name", sample: "hussein" },
-            { key: "time", sample: "10:30 PM" },
-            { key: "text", sample: "Hello Spy" }
-        ];
-
-        // ملاحقة الشبح للعين
-        document.addEventListener('mousemove', (e) => {
-            const ghost = document.getElementById('spy-ghost');
-            const rect = ghost.getBoundingClientRect();
-            const ghostX = rect.left + rect.width / 2;
-            const ghostY = rect.top + rect.height / 2;
-            const angleX = (e.clientY - ghostY) / 20;
-            const angleY = (e.clientX - ghostX) / 20;
-            ghost.style.transform = `rotateX(${-angleX}deg) rotateY(${angleY}deg) translateZ(50px)`;
-        });
-
-        // تفاعل الشبح عند الضغط
-        const ghost = document.getElementById('spy-ghost');
-        ghost.onclick = () => {
-            ghost.innerText = '👁️';
-            setTimeout(() => ghost.innerText = '👻', 1000);
-            tg.HapticFeedback.impactOccurred('medium');
-        };
-
-        function toggleLang() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            document.body.lang = currentLang;
-            document.querySelector('.lang-switcher').innerText = currentLang === 'ar' ? 'EN' : 'AR';
-            renderUI();
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = TRANSLATIONS[lang];
+            
+            document.documentElement.lang = lang;
+            document.body.classList.toggle('ltr', lang === 'en');
+            document.body.dir = lang === 'en' ? 'ltr' : 'rtl';
+            
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('label-name').textContent = t.labelName;
+            document.getElementById('your_name').placeholder = t.placeholderName;
+            document.getElementById('save-text').textContent = t.saveText;
+            document.getElementById('lang-toggle').textContent = t.langBtn;
+            
+            // إعادة بناء الحقول
+            buildFields();
         }
 
-        function renderUI() {
-            const c = content[currentLang];
-            document.getElementById('t-title').innerText = c.title;
-            document.getElementById('t-subtitle').innerText = c.subtitle;
-            document.getElementById('t-name-label').innerText = c.nameLabel;
-            
+        function buildFields() {
+            const t = TRANSLATIONS[currentLang];
             const container = document.getElementById('fields-container');
             container.innerHTML = '';
 
-            c.fields.forEach((f, index) => {
+            t.fields.forEach((f, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.style.animationDelay = `${(index + 2) * 0.1}s`;
+                card.style.animationDelay = `${0.1 * (index + 1)}s`;
+                
                 card.innerHTML = `
-                    <label class="field-label">${f.icon} <span>${f.label}</span></label>
-                    <textarea id="${f.key}" rows="2"></textarea>
-                    <div class="badges" id="b-${f.key}"></div>
-                    <div class="preview-box">
-                        <div style="font-size:10px; opacity:0.6">${c.preview}</div>
-                        <div id="p-${f.key}">${c.wait}</div>
+                    <label class="field-label">
+                        <span class="field-icon">${f.icon}</span>
+                        <span>${f.label}</span>
+                    </label>
+                    <textarea id="${f.key}" placeholder="${t.fields[index].label}..."></textarea>
+                    <div class="badges-list" id="badges-${f.key}"></div>
+                    <div class="preview-bubble-wrap">
+                        <div class="preview-label">${t.preview}</div>
+                        <div class="preview-bubble" id="preview-${f.key}">---</div>
                     </div>
                 `;
                 container.appendChild(card);
 
                 const area = card.querySelector('textarea');
-                const prev = card.querySelector(`#p-${f.key}`);
-                
-                // أزرار المتغيرات
-                VARIABLES.forEach(v => {
+                const preview = card.querySelector('.preview-bubble');
+                const badgesBox = card.querySelector('.badges-list');
+
+                // إضافة أزرار المتغيرات
+                t.variables.forEach(v => {
                     const btn = document.createElement('button');
                     btn.className = 'badge-btn';
+                    btn.type = 'button';
                     btn.innerText = `{${v.key}}`;
-                    btn.onclick = () => {
+                    btn.onclick = (e) => {
+                        e.preventDefault();
                         area.setRangeText(`{${v.key}}`, area.selectionStart, area.selectionEnd, 'end');
                         area.dispatchEvent(new Event('input'));
+                        area.focus();
                     };
-                    card.querySelector('.badges').appendChild(btn);
+                    badgesBox.appendChild(btn);
                 });
 
+                // تحديث المعاينة الحية
                 area.oninput = () => {
+                    preview.classList.add('updating');
                     let val = area.value;
-                    VARIABLES.forEach(v => {
-                        val = val.replace(new RegExp(`\\{${v.key}\\}`, 'g'), `<span class="var-tag">${v.sample}</span>`);
+                    t.variables.forEach(v => {
+                        val = val.replace(new RegExp(`\\{${v.key}\\}`, 'g'), `<span class="var-highlight">${v.sample}</span>`);
                     });
-                    prev.innerHTML = val || c.wait;
+                    preview.innerHTML = val.replace(/\n/g, '<br>') || '---';
+                    
+                    setTimeout(() => {
+                        preview.classList.remove('updating');
+                    }, 600);
                 };
             });
         }
 
-        document.getElementById('save-btn').onclick = () => {
-            const data = { name: document.getElementById('your_name').value, texts: {} };
-            content.ar.fields.forEach(f => {
-                data.texts[f.key] = document.getElementById(f.key).value;
-            });
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.sendData(JSON.stringify(data));
+        // زر تبديل اللغة
+        document.getElementById('lang-toggle').onclick = () => {
+            const newLang = currentLang === 'ar' ? 'en' : 'ar';
+            setLanguage(newLang);
         };
 
-        renderUI();
+        // زر الحفظ
+        document.getElementById('save-btn').onclick = () => {
+            const btn = document.getElementById('save-btn');
+            btn.classList.add('loading');
+            
+            const t = TRANSLATIONS[currentLang];
+            const data = {
+                your_name: document.getElementById('your_name').value,
+                texts: {}
+            };
+            
+            t.fields.forEach(f => {
+                const val = document.getElementById(f.key).value;
+                if(val) data.texts[f.key] = val;
+            });
+
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+                btn.classList.remove('loading');
+            }, 500);
+        };
+
+        // تهيئة التطبيق
+        setLanguage('ar');
     </script>
 </body>
 </html>
